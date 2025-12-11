@@ -1,0 +1,60 @@
+version: '3.5'
+services:
+    am-website-back-nginx:
+        build: ./docker/images/nginx
+        ports:
+            - "8003:80"
+        volumes:
+            - ./docker/images/nginx/default.conf:/etc/nginx/conf.d/default.conf
+            - ./application:/var/www/html
+            - ./logs:/var/log/nginx
+            - ./docker/images/certbot/conf:/etc/letsencrypt
+            - ./docker/images/certbot/www:/var/www/certbot
+        restart: unless-stopped
+        networks:
+            - am-website-back-network
+        links:
+            - am-website-back-app
+
+    am-website-back-app:
+        build: ./docker/images/php
+        working_dir: /var/www/html
+        links:
+            - am-website-back-db
+        networks:
+            - am-website-back-network
+        volumes:
+            - ./application:/var/www/html
+        restart: unless-stopped
+
+    am-website-back-db:
+        image: postgres:15.1
+        ports:
+            - "5434:5432"
+        networks:
+            - am-website-back-network
+        volumes:
+            - ./postgresqldb:/var/lib/postgresql/data
+            - ./dumps:/dumps
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: pidigital_landing_user
+            POSTGRES_PASSWORD: pQLkm8NOkS0gOBox
+            POSTGRES_DB: pidigital_landing_db
+
+    supervisor:
+        build: ./docker/images/supervisor
+        working_dir: /var/www/html
+        depends_on:
+            - am-website-back-db
+        links:
+            - am-website-back-db
+        networks:
+            - am-website-back-network
+        volumes:
+            - ./application:/var/www/html
+        restart: unless-stopped
+
+networks:
+    am-website-back-network:
+        driver: bridge

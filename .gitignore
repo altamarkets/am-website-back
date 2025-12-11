@@ -1,0 +1,5 @@
+logs/
+postgresqldb/
+application__alt/
+application__old/
+**/.DS_Store
