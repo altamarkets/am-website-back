@@ -30,7 +30,7 @@ services:
     am-website-back-db:
         image: postgres:15.1
         ports:
-            - "5439:5432"
+            - "5440:5432"
         networks:
             - am-website-back-network
         volumes:
