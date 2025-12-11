@@ -38,9 +38,9 @@ services:
             - ./dumps:/dumps
         restart: unless-stopped
         environment:
-            POSTGRES_USER: pidigital_landing_user
+            POSTGRES_USER: am-website_user
             POSTGRES_PASSWORD: pQLkm8NOkS0gOBox
-            POSTGRES_DB: pidigital_landing_db
+            POSTGRES_DB: am-website_db
 
     supervisor:
         build: ./docker/images/supervisor
@@ -54,6 +54,8 @@ services:
         volumes:
             - ./application:/var/www/html
         restart: unless-stopped
+        profiles:
+            - supervisor_enabled
 
 networks:
     am-website-back-network:
